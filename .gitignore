@@ -3,3 +3,7 @@ eln-cache/
 elpa/
 
 config.el
+config.html
+config.odt
+.emacs.custom.el
+

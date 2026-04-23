@@ -28,10 +28,29 @@ Setup package management. Note that *use-package-always-ensure* is set to t, so 
 #+end_src
 
 * Sane Defaults
-** Disable Backup and Temp Files **
-Stop creating those #auto-save# and backup~ files
+
+** Disable Backup and Temp Files
+Stop creating those #auto-save# and backup~ files.
 #+begin_src emacs-lisp
   (setq auto-save-default nil)
   (setq create-lockfiles nil)
   (setq make-backup-files nil)
+#+end_src
+
+** Custom File
+Prevent init.el from getting cluttered. Automatically create custom file if it doesn't exist.
+#+begin_src emacs-lisp
+  (setq custom-file (expand-file-name ".emacs.custom.el" user-emacs-directory))
+  (unless (file-exists-p custom-file)
+  		       (with-temp-buffer (write-file custom-file)))
+  (load-file custom-file)
+#+end_src
+
+** Font Settings
+Use Iosevka nerd font if it exists.
+#+begin_src emacs-lisp
+  (when (find-font (font-spec :name "Iosevka Nerd Font Mono"))
+    (set-face-attribute 'default nil
+  		      :family "Iosevka Nerd Font Mono"
+  		      :height 140))
 #+end_src
