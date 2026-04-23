@@ -1,0 +1,37 @@
+#+TITLE: SyedKHS's Emacs Configuration
+#+AUTHOR: SyedKHS
+#+PROPERTY: header-args:emacs-lisp :tangle yes :results silent
+
+* Package Management
+Setup package management. Note that *use-package-always-ensure* is set to t, so we don't need to add
+*:ensure t* to every use-package package specification.
+
+#+begin_src emacs-lisp
+  (require 'package)
+  (setq package-archives
+      '(("gnu" . "https://elpa.gnu.org/packages/")
+        ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+    	("melpa" . "https://melpa.org/packages/")))
+    (package-initialize)
+
+    (unless (package-installed-p 'use-package)
+      (package-refresh-contents)
+      (package-install 'use-package))
+
+    (require 'use-package)
+    (setq use-package-always-ensure t)
+#+end_src
+
+* Magit (Best Git Interface)
+#+begin_src emacs-lisp
+  (use-package magit)
+#+end_src
+
+* Sane Defaults
+** Disable Backup and Temp Files **
+Stop creating those #auto-save# and backup~ files
+#+begin_src emacs-lisp
+  (setq auto-save-default nil)
+  (setq create-lockfiles nil)
+  (setq make-backup-files nil)
+#+end_src
