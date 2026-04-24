@@ -4,6 +4,7 @@ elpa/
 transient/
 straight/
 
+history
 places
 config.el
 config.html
