@@ -73,7 +73,7 @@ Disables native compilation warnings and prune the cache at startup.
 
 #+begin_src emacs-lisp
   (when (native-comp-available-p)
-    (setq native-comp-async-report-warnings-errors nil)
+    (setq native-comp-async-report-warnings-errors 'silent)
     (native-compile-prune-cache))
 #+end_src
 
@@ -110,6 +110,10 @@ Setting org-startup-idented to *t* makes all org-mode buffers start org-indent m
     :straight (:host github :repo "jdtsmith/org-modern-indent"))
 
   (setq org-startup-indented t)
-  (add-hook 'org-mode-hook #'org-modern-indent-mode 90)  
+  (add-hook 'org-mode-hook #'org-modern-indent-mode 90)
 
+  (use-package org-bullets-mode
+    :ensure org-bullets
+    :config
+    :hook org-mode)
 #+end_src
