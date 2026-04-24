@@ -176,3 +176,11 @@ the buffer.
 #+begin_src emacs-lisp
   (save-place-mode 1)
 #+end_src
+
+** Replace Highlighted Text
+By default if you have a region and you start typing Emacs won't replace that region. Instead it will type the text at
+the location of the point. This mode makes it so if you select a region and type something, the entire region will be replaced.
+
+#+begin_src emacs-lisp
+(delete-selection-mode 1)
+#+end_src
