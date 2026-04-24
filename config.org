@@ -22,7 +22,8 @@ Setup package management. Note that *use-package-always-ensure* is set to t, so 
     (setq use-package-always-ensure t)
 #+end_src
 
-* Magit (Best Git Interface)
+* Magit
+Best git interface.
 #+begin_src emacs-lisp
   (use-package magit)
 #+end_src
@@ -53,4 +54,34 @@ Use Iosevka nerd font if it exists.
     (set-face-attribute 'default nil
   		      :family "Iosevka Nerd Font Mono"
   		      :height 140))
+#+end_src
+
+** Theme Settings
+Use *doom-moonlight* as the default theme.
+#+begin_src emacs-lisp
+  (use-package doom-themes)
+  (load-theme 'doom-moonlight t)
+#+end_src
+
+** Disable Native Compilation Warnings
+Disables native compilation warnings and prune the cache at startup.
+#+begin_src emacs-lisp
+  (when (native-comp-available-p)
+    (setq native-comp-async-report-warnings-errors nil)
+    (native-compile-prune-cache))
+#+end_src
+
+** Disable UI clutter
+Disable some built-in modes that we don't use.
+#+begin_src emacs-lisp
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+#+end_src
+
+** Modern org look
+Make org buffers fancy. We globally enable org-modern for all org buffers.
+#+begin_src emacs-lisp
+  (use-package org-modern)
+  (with-eval-after-load 'org (global-org-modern-mode))
 #+end_src
