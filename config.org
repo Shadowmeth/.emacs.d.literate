@@ -124,3 +124,18 @@ Use 'y' or 'n' instead of 'yes' or 'no' for prompts.
 #+begin_src emacs-lisp
   (setq use-short-answers t)
 #+end_src
+
+** Show Column Numbers
+Show the column numbers (character position in line) in the modeline. This is a global minor mode.
+
+#+begin_src emacs-lisp
+  (column-number-mode 1) 
+#+end_src
+
+** Show Matching Brackets
+Always show the matching brackets. This is a global minor mode.
+
+#+begin_src emacs-lisp
+  (setq show-paren-delay 0)
+  (show-paren-mode 1)
+#+end_src
