@@ -126,14 +126,14 @@ Use 'y' or 'n' instead of 'yes' or 'no' for prompts.
 #+end_src
 
 ** Show Column Numbers
-Show the column numbers (character position in line) in the modeline. This is a global minor mode.
+Show the column numbers (character position in line) in the modeline. This is a built-in global minor mode.
 
 #+begin_src emacs-lisp
   (column-number-mode 1) 
 #+end_src
 
 ** Show Matching Brackets
-Always show the matching brackets. This is a global minor mode.
+Always show the matching brackets. This is a built-in global minor mode.
 
 #+begin_src emacs-lisp
   (setq show-paren-delay 0)
@@ -156,7 +156,7 @@ Disable the annoying bell sound, this also disables the visual bell.
 
 ** Line Numbers Mode
 Display relative line numbers for certain buffers. Also preallocate the space for numbers on the left so we don't
-have weird behaviour when scrolling or moving point through the file.
+have weird behaviour when scrolling or moving point through the file. This is a built-in global minor mode.
 
 #+begin_src emacs-lisp
   (setq
@@ -171,7 +171,7 @@ have weird behaviour when scrolling or moving point through the file.
 
 ** Save Cursor Position
 Save the point position in the buffer. If we reopen the buffer the point would be at the location where we last closed
-the buffer.
+the buffer. This is a built-in global minor mode.
 
 #+begin_src emacs-lisp
   (save-place-mode 1)
@@ -180,7 +180,16 @@ the buffer.
 ** Replace Highlighted Text
 By default if you have a region and you start typing Emacs won't replace that region. Instead it will type the text at
 the location of the point. This mode makes it so if you select a region and type something, the entire region will be replaced.
+This is a built-in global minor mode.
 
 #+begin_src emacs-lisp
 (delete-selection-mode 1)
+#+end_src
+
+** Which Key
+Helpful package to show keybinds. This a built-in global minor mode.
+
+#+begin_src emacs-lisp
+  (setq which-key-idle-delay 0.5)
+  (which-key-mode 1)
 #+end_src
