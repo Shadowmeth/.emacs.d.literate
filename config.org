@@ -117,3 +117,10 @@ Setting org-startup-idented to *t* makes all org-mode buffers start org-indent m
     :config
     :hook org-mode)
 #+end_src
+
+** Quick Prompts
+Use 'y' or 'n' instead of 'yes' or 'no' for prompts.
+
+#+begin_src emacs-lisp
+  (setq use-short-answers t)
+#+end_src
