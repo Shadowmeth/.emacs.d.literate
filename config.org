@@ -139,3 +139,17 @@ Always show the matching brackets. This is a global minor mode.
   (setq show-paren-delay 0)
   (show-paren-mode 1)
 #+end_src
+
+** Disable Startup Screen
+Don't show the startup screen. We jump directly to the *scratch* buffer.
+
+#+begin_src emacs-lisp
+  (setq inhibit-splash-screen t)
+#+end_src
+
+** Disable Bell Sound
+Disable the annoying bell sound, this also disables the visual bell.
+
+#+begin_src emacs-lisp
+  (setq ring-bell-function 'ignore)
+#+end_src
