@@ -153,3 +153,18 @@ Disable the annoying bell sound, this also disables the visual bell.
 #+begin_src emacs-lisp
   (setq ring-bell-function 'ignore)
 #+end_src
+
+** Line Numbers Mode
+Display relative line numbers for certain buffers. Also preallocate the space for numbers on the left so we don't
+have weird behaviour when scrolling or moving point through the file.
+
+#+begin_src emacs-lisp
+  (setq
+   display-line-numbers-type 'relative
+   display-line-numbers-width-start t)
+
+  (add-hook 'prog-mode-hook 'display-line-numbers-mode)
+  (add-hook 'conf-mode-hook 'display-line-numbers-mode)
+  (add-hook 'text-mode-hook 'display-line-numbers-mode)
+  (add-hook 'dired-mode-hook 'display-line-numbers-mode)
+#+end_src
