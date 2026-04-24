@@ -1,6 +1,8 @@
 auto-save-list/
 eln-cache/
 elpa/
+transient/
+straight/
 
 config.el
 config.html
