@@ -330,3 +330,24 @@ Quickly add/change/delete matching pairs.
   (use-package surround
     :bind-keymap ("C-c s" . surround-keymap))
 #+end_src
+
+** Move Text
+Move line/region up and down while maintaining the indentation.
+
+#+begin_src emacs-lisp
+  (use-package move-text
+    :config
+    (move-text-default-bindings)) ;; M-<up> M-<down> are the default bindings.
+
+  (defun indent-region-advice (&rest ignored)
+    "Re-indent the text in-and-around a text move."
+    (let ((deactivate deactivate-mark))
+      (if (region-active-p)
+          (indent-region (region-beginning) (region-end))
+        (indent-region (line-beginning-position) (line-end-position)))
+      (setq deactivate-mark deactivate)))
+
+  (advice-add 'move-text-up :after 'indent-region-advice)
+  (advice-add 'move-text-down :after 'indent-region-advice)
+#+end_src
+
