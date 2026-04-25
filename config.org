@@ -410,3 +410,15 @@ Try to guess indentation settings from existing code and set the appropriate var
     :config
     (dtrt-indent-global-mode +1))
 #+end_src
+
+** Orderless
+Fuzzy matching in Emacs.
+
+#+begin_src emacs-lisp
+  (use-package orderless
+    :custom
+    (completion-styles '(orderless partial-completion basic))
+    (completion-category-overrides '((file (styles partial-completion))))
+    (completion-category-defaults nil) ;; Disable defaults, use our settings.
+    (completion-pcm-leading-wildcard t)) ;; Emacs 31: partial-completion behaves like substring.
+#+end_src
