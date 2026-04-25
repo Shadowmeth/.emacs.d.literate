@@ -422,3 +422,18 @@ Fuzzy matching in Emacs.
     (completion-category-defaults nil) ;; Disable defaults, use our settings.
     (completion-pcm-leading-wildcard t)) ;; Emacs 31: partial-completion behaves like substring.
 #+end_src
+
+** Vertico
+Enhanced minibuffer completions. We also enable recursive minibuffers and turn on mode aware commands only.
+
+#+begin_src emacs-lisp
+
+  (setq enable-recursive-minibuffers t)
+  (setq read-extended-command-predicate #'command-completion-default-include-p)
+
+  (use-package vertico
+    :custom
+    (vertico-cycle t)
+    :config
+    (vertico-mode))
+#+end_src
