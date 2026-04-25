@@ -296,3 +296,29 @@ GC trigger.
     (setq gcmh-idle-delay 3)
     (gcmh-mode 1))
 #+end_src
+
+** Exec Path From Shell
+Get shell environment variables.
+
+#+begin_src emacs-lisp
+
+  (use-package exec-path-from-shell
+    :config
+    (when (memq window-system '(mac ns x))
+      (exec-path-from-shell-initialize))
+    (when (daemonp)
+      (exec-path-from-shell-initialize)))
+#+end_src
+
+** Pdf Tools
+View pdfs in Emacs. We remember the position in the pdf too with *save-place-mode*.
+
+#+begin_src emacs-lisp
+  (use-package saveplace-pdf-view
+    :config
+    (save-place-mode 1))
+
+  (use-package pdf-tools
+    :config
+    (pdf-loader-install)) ;; On demand loading. Leads to faster startup time.
+#+end_src
