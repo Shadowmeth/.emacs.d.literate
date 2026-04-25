@@ -255,5 +255,33 @@ Configuration for the compile commands.
 Adjustments to make Emacs faster.
 
 #+begin_src emacs-lisp
-  (setq read-process-output-max (* 1024 1024) ;; Increase amount of data Emacs reads from a process (1 mb).
+  (setq read-process-output-max (* 1024 1024)) ;; Increase amount of data Emacs reads from a process (1 mb).
+#+end_src
+
+* Packages
+** Garbage Collector Magic Hack (gcmh)
+Try to defer GC as much as possible. We try to do GC when idle and increase the maximum memory that can be allocated before
+requiring GC trigger. An interactive helper function *my/time-since-last-gc* is also defined that shows the time since the last
+GC trigger.
+
+#+begin_src emacs-lisp
+  (defvar my-last-gc-time (current-time)
+    "Time when the last garbage collection finished")
+
+  (add-hook 'post-gc-hook
+  	  (lambda ()
+  	    (setq my-last-gc-time (current-time))))
+
+  (defun my/time-since-last-gc ()
+    "Show and return seconds since the last garbage collection."
+    (interactive)
+    (let ((secs (float-time (time-subtract (current-time) my-last-gc-time))))
+      (when (called-interactively-p 'any)
+        (message "Time since last GC: %.2f seconds" secs))
+      secs))
+
+  (use-package gcmh
+    :config
+    (setq gcmh-idle-delay 3)
+    (gcmh-mode 1))
 #+end_src
