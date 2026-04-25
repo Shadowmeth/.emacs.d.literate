@@ -377,3 +377,16 @@ Delete everything upto a specific char (zappping).
     :config
     (global-set-key (kbd "M-z") #'zzz-to-char))
 #+end_src
+
+** Multiple Cursors
+Multiple cursors. Most useful package to exist!
+
+#+begin_src emacs-lisp
+  (use-package multiple-cursors
+    :config
+    (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+    (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+    (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+    (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+    (setq mc/always-run-for-all t)) ;; Disable confirmations for running certain commands with mc.
+#+end_src
