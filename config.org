@@ -368,3 +368,12 @@ Quickly switch windows.
     :config
     (global-set-key (kbd "M-o") 'ace-window))
 #+end_Src
+
+** ZZZ To Char
+Delete everything upto a specific char (zappping).
+
+#+begin_src emacs-lisp
+  (use-package zzz-to-char
+    :config
+    (global-set-key (kbd "M-z") #'zzz-to-char))
+#+end_src
