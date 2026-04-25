@@ -351,3 +351,11 @@ Move line/region up and down while maintaining the indentation.
   (advice-add 'move-text-down :after 'indent-region-advice)
 #+end_src
 
+** Expand Region
+Incremental selection of syntactic elements.
+
+#+begin_src emacs-lisp
+  (use-package expand-region
+    :config
+    (global-set-key (kbd "C-=") 'er/expand-region))
+#+end_src
