@@ -390,3 +390,15 @@ Multiple cursors. Most useful package to exist!
     (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
     (setq mc/always-run-for-all t)) ;; Disable confirmations for running certain commands with mc.
 #+end_src
+
+** Vterm
+Fastest terminal emulator in Emacs. Built on top of libvterm. On Ubuntu *libtool* and *libtool-bin* package might be required
+for building libvterm.
+
+#+begin_src emacs-lisp
+  (use-package vterm
+    :custom (vterm-kill-buffer-on-exit t)
+    :config
+    (setq vterm-max-scrollback 10000))
+#+end_src
+
