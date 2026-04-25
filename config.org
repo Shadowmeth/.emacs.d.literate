@@ -359,3 +359,12 @@ Incremental selection of syntactic elements.
     :config
     (global-set-key (kbd "C-=") 'er/expand-region))
 #+end_src
+
+** Ace Window
+Quickly switch windows.
+
+#+begin_src emacs-lisp
+  (use-package ace-window
+    :config
+    (global-set-key (kbd "M-o") 'ace-window))
+#+end_Src
