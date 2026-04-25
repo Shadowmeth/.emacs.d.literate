@@ -239,6 +239,17 @@ All the indentation settings for every mode goes here.
 #+begin_src emacs-lisp
   (setq-default indent-tabs-mode nil) ;; Use spaces instead of tabs.
   (setq-default tab-width 8) ;; Tab are 8 spaces long.
+
+  (setq-default c-default-style "linux")
+  (setq-default c-basic-offset 4) ;; Set to 4 spaces.
+
+  ;; Forcefully disable indent-tabs-mode for C/C++ files since "linux" style enables them.
+  (add-hook 'c-mode-hook
+            (lambda ()
+              (setq indent-tabs-mode nil)))
+  (add-hook 'c++-mode-hook
+            (lambda ()
+              (setq indent-tabs-mode nil)))
 #+end_src
 
 ** Compilation Mode
