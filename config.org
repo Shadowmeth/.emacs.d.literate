@@ -322,3 +322,11 @@ View pdfs in Emacs. We remember the position in the pdf too with *save-place-mod
     :config
     (pdf-loader-install)) ;; On demand loading. Leads to faster startup time.
 #+end_src
+
+** Surround
+Quickly add/change/delete matching pairs.
+
+#+begin_src emacs-lisp
+  (use-package surround
+    :bind-keymap ("C-c s" . surround-keymap))
+#+end_src
