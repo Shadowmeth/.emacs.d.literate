@@ -129,7 +129,7 @@ Use 'y' or 'n' instead of 'yes' or 'no' for prompts.
 Show the column numbers (character position in line) in the modeline. This is a built-in global minor mode.
 
 #+begin_src emacs-lisp
-  (column-number-mode 1) 
+  (column-number-mode +1) 
 #+end_src
 
 ** Show Matching Brackets
@@ -137,7 +137,7 @@ Always show the matching brackets. This is a built-in global minor mode.
 
 #+begin_src emacs-lisp
   (setq show-paren-delay 0)
-  (show-paren-mode 1)
+  (show-paren-mode +1)
 #+end_src
 
 ** Disable Startup Screen
@@ -174,7 +174,7 @@ Save the point position in the buffer. If we reopen the buffer the point would b
 the buffer. Saves cursor position in ~/.emacs.d/places by default. This is a built-in global minor mode.
 
 #+begin_src emacs-lisp
-  (save-place-mode 1)
+  (save-place-mode +1)
 #+end_src
 
 ** Replace Highlighted Text
@@ -183,7 +183,7 @@ the location of the point. This mode makes it so if you select a region and type
 This is a built-in global minor mode.
 
 #+begin_src emacs-lisp
-(delete-selection-mode 1)
+(delete-selection-mode +1)
 #+end_src
 
 ** Which Key
@@ -191,7 +191,7 @@ Helpful package to show keybinds. This a built-in global minor mode.
 
 #+begin_src emacs-lisp
   (setq which-key-idle-delay 0.5)
-  (which-key-mode 1)
+  (which-key-mode +1)
 #+end_src
 
 ** Save Minibuffer History
@@ -199,7 +199,7 @@ Saves the minibuffer history. This is useful after restarts if we don't remember
 This is built-in global minor mode.
 
 #+begin_src emacs-lisp
-(savehist-mode 1)
+(savehist-mode +1)
 #+end_src
 
 ** Delete Items by Moving to Trash
@@ -215,7 +215,7 @@ global minor mode.
 
 #+begin_src emacs-lisp
   (require 'editorconfig)
-  (editorconfig-mode 1)
+  (editorconfig-mode +1)
 #+end_src
 
 ** Eldoc Mode Configuration
@@ -229,7 +229,7 @@ Configuration for Eldoc Mode. This is a built-in mode. Displays information abou
 Useful for repeating keybinds without prefix keys. This a built-in mode.
 
 #+begin_src emacs-lisp
-(repeat-mode 1)
+(repeat-mode +1)
 #+end_src
 
 
@@ -294,7 +294,7 @@ GC trigger.
   (use-package gcmh
     :config
     (setq gcmh-idle-delay 3)
-    (gcmh-mode 1))
+    (gcmh-mode +1))
 #+end_src
 
 ** Exec Path From Shell
@@ -316,7 +316,7 @@ View pdfs in Emacs. We remember the position in the pdf too with *save-place-mod
 #+begin_src emacs-lisp
   (use-package saveplace-pdf-view
     :config
-    (save-place-mode 1))
+    (save-place-mode +1))
 
   (use-package pdf-tools
     :config
@@ -402,3 +402,11 @@ for building libvterm.
     (setq vterm-max-scrollback 10000))
 #+end_src
 
+** Do the Right Thing Indent (dtrt-indent)
+Try to guess indentation settings from existing code and set the appropriate variables.
+
+#+begin_src emacs-lisp
+  (use-package dtrt-indent
+    :config
+    (dtrt-indent-global-mode +1))
+#+end_src
