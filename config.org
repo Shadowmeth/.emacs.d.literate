@@ -218,3 +218,42 @@ global minor mode.
   (editorconfig-mode 1)
 #+end_src
 
+** Eldoc Mode Configuration
+Configuration for Eldoc Mode. This is a built-in mode. Displays information about variables / functions in mninibuffer.
+
+#+begin_src emacs-lisp
+(setq eldoc-idle-delay 0.1)
+#+end_src
+
+** Repeat Mode
+Useful for repeating keybinds without prefix keys. This a built-in mode.
+
+#+begin_src emacs-lisp
+(repeat-mode 1)
+#+end_src
+
+
+** Indentation Settings
+All the indentation settings for every mode goes here.
+
+#+begin_src emacs-lisp
+  (setq-default indent-tabs-mode nil) ;; Use spaces instead of tabs.
+  (setq-default tab-width 8) ;; Tab are 8 spaces long.
+#+end_src
+
+** Compilation Mode
+Configuration for the compile commands.
+
+#+begin_src emacs-lisp
+  (setq compilation-always-kill t) ;; Kill previous compilation process before starting new one.
+  (setq compilation-scroll-output t) ;; Automatically go to end of the compilation buffer.
+  (global-set-key (kbd "<f5>") #'compile)
+  (global-set-key (kbd "<f6>") #'recompile)
+#+end_src
+
+** Performance Tweaks
+Adjustments to make Emacs faster.
+
+#+begin_src emacs-lisp
+  (setq read-process-output-max (* 1024 1024) ;; Increase amount of data Emacs reads from a process (1 mb).
+#+end_src
