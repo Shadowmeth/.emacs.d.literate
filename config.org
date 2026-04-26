@@ -585,3 +585,47 @@ Context aware actions.
   ;; Consult users will also want the embark-consult package.
   (use-package embark-consult) ; only need to install it, embark loads it after consult if found
 #+end_src
+
+** Kind Icon
+SVG icons for completion UIs (company, corfu, etc...)
+
+#+begin_src emacs-lisp
+  (use-package kind-icon
+    :after corfu
+    :config
+    (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+#+end_src
+
+** Corfu
+Corfu enhances in-buffer completion with a small completion popup. The current candidates are shown in a popup below or
+above the point, and can be selected by moving up and down. Corfu is the minimalistic in-buffer completion counterpart
+of the Vertico minibuffer UI.
+
+#+begin_src emacs-lisp
+  (use-package corfu
+    :custom
+    (corfu-auto nil)
+    (corfu-cycle t)
+    (corfu-popupinfo-delay 0.1)
+    (corfu-preselect nil)
+    (corfu-quit-no-match t)
+    (corfu-on-exact-match nil)
+    (tab-always-indent 'complete) ;; Emacs thing, not Corfu. TAB tries to indent first and then auto-complete.
+    (corfu-quit-at-boundary nil) ;; Use the separator in Corfu completions.
+    :bind
+    (:map corfu-map
+          ("TAB" . corfu-insert)
+          ("<tab>" . corfu-insert)
+          ("RET" . corfu-insert)
+          ("<return>" . corfu-insert)
+          ("C-n" . corfu-next)
+          ("C-p" . corfu-previous))
+    :config
+    (setq
+     corfu-separator ?\s
+     corfu-popupinfo-max-height 20)
+
+    (global-corfu-mode)
+    (corfu-history-mode)
+    (corfu-popupinfo-mode))
+#+end_src

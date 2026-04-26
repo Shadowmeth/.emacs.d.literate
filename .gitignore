@@ -3,7 +3,9 @@ eln-cache/
 elpa/
 transient/
 straight/
+.cache/
 
+tramp
 history
 places
 config.el
