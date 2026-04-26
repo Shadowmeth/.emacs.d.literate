@@ -17,6 +17,11 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+;; Don't let straight build/install packages that are already in Emacs core.
+;; Prevents stale straight copies from conflicting with the built-ins.
+(dolist (pkg '(project eglot jsonrpc flymake eldoc xref))
+  (add-to-list 'straight-built-in-pseudo-packages pkg))
+
 ;; Ensure straight's Org takes precedence over Emacs's built-in Org
 ;; before org-babel-load-file triggers Org loading.
 (straight-use-package 'org)

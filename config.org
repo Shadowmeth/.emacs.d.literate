@@ -331,10 +331,7 @@ Get shell environment variables.
 
   (use-package exec-path-from-shell
     :config
-    (when (memq window-system '(mac ns x))
-      (exec-path-from-shell-initialize))
-    (when (daemonp)
-      (exec-path-from-shell-initialize)))
+    (exec-path-from-shell-initialize))
 #+end_src
 
 ** Pdf Tools
@@ -761,17 +758,16 @@ Native built-in LSP client for Emacs.
                 ("C-c e f" . eglot-format-buffer)
                 ("C-c e F" . eglot-format)
                 ("C-c e n" . flymake-goto-next-error)
-                ("C-c e p" . flymake-goto-previous-error)
+                ("C-c e p" . flymake-goto-prev-error)
                 ("C-c e t" . eglot-find-typeDefinition)
                 ("C-c e i" . eglot-find-implementation)
                 ("C-c e x" . eglot-find-declaration))
     :custom
     (eglot-report-progress nil)
     (eglot-confirm-server-initiated-edits nil)
-    (eglot-shutdown t)
+    (eglot-autoshutdown t)
     (eglot-extend-to-xref t)
     :config
-    (add-to-list 'eglot-stay-out-of 'flymake)
     (setq eglot-events-buffer-config '(:size 0 :format full))
     (setq eglot-ignored-server-capabilities
           '(:documentHighlightProvider
