@@ -603,6 +603,7 @@ of the Vertico minibuffer UI.
 
 #+begin_src emacs-lisp
   (use-package corfu
+    :demand t ;; Don't lazy load
     :custom
     (corfu-auto nil)
     (corfu-cycle t)
