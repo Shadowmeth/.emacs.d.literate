@@ -31,6 +31,19 @@ Best git interface.
 
 * Sane Defaults
 
+** Dired Configuration
+Configuration and enhancements for Dired.
+
+#+begin_src emacs-lisp
+  (use-package diredfl
+    :hook (dired-mode . diredfl-mode))
+
+  (require 'dired-x)
+  (setq-default dired-dwim-target t)
+  (setq dired-listing-switches "-alh")
+  (setq dired-kill-when-opening-new-dired-buffer t) ;; Reduce number of dired buffers open.
+#+end_Src
+
 ** Disable Backup and Temp Files
 Stop creating those #auto-save# and backup~ files.
 
@@ -222,7 +235,12 @@ global minor mode.
 Configuration for Eldoc Mode. This is a built-in mode. Displays information about variables / functions in mninibuffer.
 
 #+begin_src emacs-lisp
-(setq eldoc-idle-delay 0.1)
+  (setq eldoc-idle-delay 0.1)
+  ;; Skip showing documentation in the echo area if the dedicated documentation buffer is already displayed in some window.
+  (setq eldoc-echo-area-prefer-doc-buffer t)
+  (setq eldoc-echo-area-use-multiline-p 4)
+  (add-hook 'prog-mode-hook #'eldoc-mode) ;; Enable eldoc-mode for all programming modes.
+  (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
 #+end_src
 
 ** Repeat Mode
@@ -270,6 +288,15 @@ Adjustments to make Emacs faster.
 #+end_src
 
 * Packages
+
+** Must Have Modes
+All the modes that are needed and don't come pre-installed go here.
+
+#+begin_src emacs-lisp
+  (use-package markdown-mode)
+  (use-package rust-mode)
+#+end_src
+
 ** Garbage Collector Magic Hack (gcmh)
 Try to defer GC as much as possible. We try to do GC when idle and increase the maximum memory that can be allocated before
 requiring GC trigger. An interactive helper function *my/time-since-last-gc* is also defined that shows the time since the last
@@ -418,7 +445,9 @@ Fuzzy matching in Emacs.
   (use-package orderless
     :custom
     (completion-styles '(orderless partial-completion basic))
-    (completion-category-overrides '((file (styles partial-completion))))
+    (completion-category-overrides '((eglot (styles orderless))
+                                     (eglot-capf (styles orderless))
+                                     (file (styles partial-completion))))
     (completion-category-defaults nil) ;; Disable defaults, use our settings.
     (completion-pcm-leading-wildcard t)) ;; Emacs 31: partial-completion behaves like substring.
 #+end_src
@@ -629,4 +658,135 @@ of the Vertico minibuffer UI.
     (global-corfu-mode)
     (corfu-history-mode)
     (corfu-popupinfo-mode))
+#+end_src
+
+** Flymake Customization
+This is a built-in mode.
+
+#+begin_src emacs-lisp :tangle yes
+  ;; Disable line squiggles.
+  (with-eval-after-load 'flymake
+    (set-face-attribute 'flymake-error nil :underline nil)
+    (set-face-attribute 'flymake-warning nil :underline nil)
+    (set-face-attribute 'flymake-note nil :underline nil))
+#+end_src
+
+** Yasnippets
+Snippets support in Emacs.
+
+#+begin_src emacs-lisp
+  (use-package yasnippet
+    :ensure t
+    :config
+    (setq yas-verbosity 0)
+    (yas-global-mode 1)
+
+    ;; Disable TAB key for snippet navigation
+    (define-key yas-keymap (kbd "TAB") nil)
+    (define-key yas-keymap (kbd "<tab>") nil)
+    (define-key yas-keymap (kbd "SPC") nil)
+
+    ;; This is key: bind TAB to nothing, allowing it to fall through
+    (define-key yas-minor-mode-map (kbd "TAB") nil)
+    (define-key yas-minor-mode-map (kbd "<tab>") nil)
+
+    ;; Use C-j and C-k for navigation
+    (define-key yas-keymap (kbd "C-j") 'yas-next-field-or-maybe-expand)
+    (define-key yas-keymap (kbd "C-k") 'yas-prev-field))
+
+  (use-package yasnippet-snippets)
+  (use-package yasnippet-capf)
+#+end_src
+
+** Cape
+capf extensions for corfu.
+
+#+begin_src emacs-lisp
+  (use-package cape
+    :init
+    (add-hook 'completion-at-point-functions #'cape-file)
+    (add-hook 'completion-at-point-functions #'cape-dabbrev)
+    (add-hook 'completion-at-point-functions #'cape-keyword)
+    (add-hook 'completion-at-point-functions #'yasnippet-capf)
+    :config
+    (advice-add #'eglot-completion-at-point :around #'cape-wrap-noninterruptible)
+    (advice-add #'yasnippet-capf            :around #'cape-wrap-noninterruptible)
+    (advice-add #'cape-dabbrev              :around #'cape-wrap-noninterruptible)
+    (advice-add #'cape-keyword              :around #'cape-wrap-noninterruptible)
+    (advice-add #'cape-file                 :around #'cape-wrap-noninterruptible)
+
+    ;; When Eglot manages a buffer, set up a composed CAPF that combines
+    ;; LSP completions with snippets, dabbrev, and keywords.
+    (add-hook 'eglot-managed-mode-hook
+              (lambda ()
+                (setq-local completion-at-point-functions
+                            (list
+                             #'cape-file
+                             (cape-capf-buster
+                               (cape-capf-super
+                                #'eglot-completion-at-point
+                                #'yasnippet-capf
+                                #'cape-dabbrev
+                                #'cape-keyword)))))))
+#+end_src
+
+** Eglot Booster
+Uses *emacs-lsp-booster* to grealy improve LSP performance.
+
+#+begin_src emacs-lisp
+  (use-package eglot-booster
+    :straight (:host github :repo "jdtsmith/eglot-booster")
+    :after eglot
+    :config
+    (setq eglot-booster-io-only t)
+    (eglot-booster-mode))
+#+end_src
+
+** Eglot
+Native built-in LSP client for Emacs.
+
+#+begin_src emacs-lisp
+  (use-package eglot
+    :ensure nil ;; Already built-in in Emacs 29+.
+    :hook ((
+            c-mode
+            c++-mode
+            python-mode
+            rust-mode
+            java-mode
+            ) . eglot-ensure)
+    :bind (:map eglot-mode-map
+                ("C-c e a" . eglot-code-actions)
+                ("C-c e r" . eglot-rename)
+                ("C-c e f" . eglot-format-buffer)
+                ("C-c e F" . eglot-format)
+                ("C-c e n" . flymake-goto-next-error)
+                ("C-c e p" . flymake-goto-previous-error)
+                ("C-c e t" . eglot-find-typeDefinition)
+                ("C-c e i" . eglot-find-implementation)
+                ("C-c e x" . eglot-find-declaration))
+    :custom
+    (eglot-report-progress nil)
+    (eglot-confirm-server-initiated-edits nil)
+    (eglot-shutdown t)
+    (eglot-extend-to-xref t)
+    :config
+    (add-to-list 'eglot-stay-out-of 'flymake)
+    (setq eglot-events-buffer-config '(:size 0 :format full))
+    (setq eglot-ignored-server-capabilities
+          '(:documentHighlightProvider
+            :documentOnTypeFormattingProvider)))
+#+end_src
+
+* Modes Configuration
+Language specific modes configuration goes here.
+
+** CC Mode
+C/C++ modes configuration.
+
+#+begin_src emacs-lisp
+  ;; Make C and C++ modes respect the `tab-always-indent` variable.
+  (with-eval-after-load 'cc-mode
+    (define-key c-mode-map   (kbd "TAB") #'indent-for-tab-command)
+    (define-key c++-mode-map (kbd "TAB") #'indent-for-tab-command))
 #+end_src
