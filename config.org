@@ -813,7 +813,7 @@ Language server configurations for the required major modes comes here.
 Clean up the LSP documentation for Eldoc. Eldoc can't handle embedded HTML and shows the text as is for some
 LSPs (such as basedpyright). This advice clears the entities.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (defun my/decode-html-entities-string (s)
     "Decode HTML entities in string S, returning the decoded string."
     (with-temp-buffer
