@@ -788,16 +788,97 @@ Display eglot documentation in echo area.
 Language server configurations for the required major modes comes here.
 
 #+begin_src emacs-lisp
-  (with-eval-after-load 'eglot
-    (add-to-list 'eglot-server-programs
-                 '((c-mode c++-mode c-ts-mode c++-ts-mode)
-                   . ("clangd"
-                      "-j=4"
-                      "--background-index"
-                      "--clang-tidy"
-                      "--completion-style=detailed"
-                      "--header-insertion=never"
-                      "--header-insertion-decorators=0"))))
+    (with-eval-after-load 'eglot
+      (add-to-list 'eglot-server-programs
+                   '((c-mode c++-mode c-ts-mode c++-ts-mode)
+                     . ("clangd"
+                        "-j=4"
+                        "--background-index"
+                        "--clang-tidy"
+                        "--completion-style=detailed"
+                        "--header-insertion=never"
+                        "--header-insertion-decorators=0")))
+      (add-to-list 'eglot-server-programs
+                   '((python-mode python-ts-mode)
+                     . ("basedpyright-langserver"
+                        "--stdio")))
+      (setq-default eglot-workspace-configuration
+                    '(:basedpyright
+                      (:analysis
+                       (:autoSearchPaths t
+                       :diagnosticMode "openFilesOnly")))))
+#+end_src
+
+** Clean LSP Documentation
+Clean up the LSP documentation for Eldoc. Eldoc can't handle embedded HTML and shows the text as is for some
+LSPs (such as basedpyright). This advice clears the entities.
+
+#+begin_src emacs-lisp
+  (defun my/decode-html-entities-string (s)
+    "Decode HTML entities in string S, returning the decoded string."
+    (with-temp-buffer
+      (insert s)
+      ;; Named entities
+      (goto-char (point-min))
+      (while (re-search-forward "&\\([a-zA-Z][a-zA-Z0-9]*\\);" nil t)
+        (let* ((name (match-string 1))
+               (char (cdr (assoc name '(("nbsp"   . 32)
+                                        ("lt"     . 60)
+                                        ("gt"     . 62)
+                                        ("amp"    . 38)
+                                        ("quot"   . 34)
+                                        ("apos"   . 39)
+                                        ("mdash"  . 8212)
+                                        ("ndash"  . 8211)
+                                        ("hellip" . 8230)
+                                        ("copy"   . 169)
+                                        ("reg"    . 174)
+                                        ("trade"  . 8482))))))
+          (when char
+            (replace-match (char-to-string char) t t))))
+      ;; Numeric entities (decimal): &#39;
+      (goto-char (point-min))
+      (while (re-search-forward "&#\\([0-9]+\\);" nil t)
+        (replace-match (char-to-string (string-to-number (match-string 1)))
+                       t t))
+      ;; Numeric entities (hex): &#x27;
+      (goto-char (point-min))
+      (while (re-search-forward "&#x\\([0-9a-fA-F]+\\);" nil t)
+        (replace-match (char-to-string (string-to-number (match-string 1) 16))
+                       t t))
+      (buffer-string)))
+
+  (defun my/eglot-decode-html-entities (orig-fn markup)
+    "Decode HTML entities in MARKUP before passing to ORIG-FN.
+  Handles the various shapes Eglot may receive markup in:
+    - Plain strings
+    - LSP MarkupContent plists like (:kind \"markdown\" :value \"...\")
+    - Cons cells like (\"string\" . properties)"
+    (let ((decoded
+           (cond
+            ;; Plain string
+            ((stringp markup)
+             (my/decode-html-entities-string markup))
+            ;; Plist with :value (LSP MarkupContent form)
+            ((and (listp markup) (plist-member markup :value))
+             (let ((copy (copy-sequence markup)))
+               (plist-put copy :value
+                          (my/decode-html-entities-string
+                           (plist-get copy :value)))
+               copy))
+            ;; Cons cell with a string in the car
+            ((and (consp markup) (stringp (car markup)))
+             (cons (my/decode-html-entities-string (car markup))
+                   (cdr markup)))
+            ;; Anything else — pass through unchanged
+            (t markup))))
+      (funcall orig-fn decoded)))
+
+  ;; Always remove first, then re-add — ensures the advice points at the
+  ;; current definition of the function, not a stale one from a previous
+  ;; evaluation.
+  (advice-remove 'eglot--format-markup #'my/eglot-decode-html-entities)
+  (advice-add 'eglot--format-markup :around #'my/eglot-decode-html-entities)
 #+end_src
 
 
