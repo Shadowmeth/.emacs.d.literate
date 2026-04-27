@@ -240,7 +240,7 @@ Configuration for Eldoc Mode. This is a built-in mode. Displays information abou
   (setq eldoc-echo-area-prefer-doc-buffer t)
   (setq eldoc-echo-area-use-multiline-p 4)
   (add-hook 'prog-mode-hook #'eldoc-mode) ;; Enable eldoc-mode for all programming modes.
-  (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
+  (setq eldoc-documentation-strategy #'eldoc-documentation-enthusiast)
 #+end_src
 
 ** Repeat Mode
@@ -761,6 +761,15 @@ Native built-in LSP client for Emacs.
     (setq eglot-ignored-server-capabilities
           '(:documentHighlightProvider
             :documentOnTypeFormattingProvider)))
+#+end_src
+
+** Eglot Signature Eldoc Talkative
+Display eglot documentation in echo area.
+
+#+begin_src emacs-lisp
+  (use-package eglot-signature-eldoc-talkative)
+  (advice-add #'eglot-signature-eldoc-function
+              :override #'eglot-signature-eldoc-talkative)
 #+end_src
 
 ** Language Server Configurations
