@@ -612,16 +612,6 @@ Context aware actions.
   (use-package embark-consult) ; only need to install it, embark loads it after consult if found
 #+end_src
 
-** Kind Icon
-SVG icons for completion UIs (company, corfu, etc...)
-
-#+begin_src emacs-lisp
-  (use-package kind-icon
-    :after corfu
-    :config
-    (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
-#+end_src
-
 ** Corfu
 Corfu enhances in-buffer completion with a small completion popup. The current candidates are shown in a popup below or
 above the point, and can be selected by moving up and down. Corfu is the minimalistic in-buffer completion counterpart
@@ -653,8 +643,7 @@ of the Vertico minibuffer UI.
      corfu-popupinfo-max-height 20)
 
     (global-corfu-mode)
-    (corfu-history-mode)
-    (corfu-popupinfo-mode))
+    (corfu-history-mode))
 #+end_src
 
 ** Flymake Customization
@@ -720,11 +709,11 @@ capf extensions for corfu.
                             (list
                              #'cape-file
                              (cape-capf-buster
+                              (cape-capf-noninterruptible
                                (cape-capf-super
                                 #'eglot-completion-at-point
                                 #'yasnippet-capf
-                                #'cape-dabbrev
-                                #'cape-keyword)))))))
+                                #'cape-dabbrev))))))))
 #+end_src
 
 ** Eglot Booster
@@ -773,6 +762,23 @@ Native built-in LSP client for Emacs.
           '(:documentHighlightProvider
             :documentOnTypeFormattingProvider)))
 #+end_src
+
+** Language Server Configurations
+Language server configurations for the required major modes comes here.
+
+#+begin_src emacs-lisp
+  (with-eval-after-load 'eglot
+    (add-to-list 'eglot-server-programs
+                 '((c-mode c++-mode c-ts-mode c++-ts-mode)
+                   . ("clangd"
+                      "-j=4"
+                      "--background-index"
+                      "--clang-tidy"
+                      "--completion-style=detailed"
+                      "--header-insertion=never"
+                      "--header-insertion-decorators=0"))))
+#+end_src
+
 
 * Modes Configuration
 Language specific modes configuration goes here.
