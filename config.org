@@ -34,7 +34,7 @@ Best git interface.
 ** Whitespace Mode
 Clearly show the whitespaces.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package whitespace
     :ensure nil
     :config
