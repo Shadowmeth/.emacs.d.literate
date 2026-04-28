@@ -661,12 +661,37 @@ of the Vertico minibuffer UI.
 ** Flymake Customization
 This is a built-in mode.
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
   ;; Disable line squiggles.
   (with-eval-after-load 'flymake
     (set-face-attribute 'flymake-error nil :underline nil)
     (set-face-attribute 'flymake-warning nil :underline nil)
     (set-face-attribute 'flymake-note nil :underline nil))
+#+end_src
+
+** Flycheck
+This is the modern replacement for Flymake. It supports a lot more features and a lot more languages than flymake. Sadly
+Flycheck doesn't work out of the box with Eglot and some modes so we will need to do some work to get the integration right.
+
+#+begin_src emacs-lisp
+  (use-package flycheck
+    :config
+    (setq
+     flycheck-idle-delay-change 0.3
+     flycheck-display-errors-delay 0.3
+     flycheck-highlighting-mode nil))
+
+  (use-package flycheck-rust
+    :config
+    (with-eval-after-load 'rust-mode
+      (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+    (with-eval-after-load 'rust-ts-mode
+      (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
+
+  (use-package flycheck-eglot
+    :after (flycheck eglot)
+    :config
+    (global-flycheck-eglot-mode +1))
 #+end_src
 
 ** Yasnippets
