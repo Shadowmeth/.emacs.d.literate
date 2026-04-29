@@ -801,6 +801,9 @@ Native built-in LSP client for Emacs.
     (eglot-autoshutdown t)
     (eglot-extend-to-xref t)
     :config
+    (add-hook 'eglot-managed-mode-hook
+              (lambda ()
+                (eglot-inlay-hints-mode -1)))
     (setq eglot-events-buffer-config '(:size 0 :format full))
     (setq eglot-ignored-server-capabilities
           '(:documentHighlightProvider
