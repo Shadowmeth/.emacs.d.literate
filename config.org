@@ -752,12 +752,12 @@ capf extensions for corfu.
                 (setq-local completion-at-point-functions
                             (list
                              #'cape-file
-                             #'cape-dabbrev
-                             #'yasnippet-capf
                              (cape-capf-buster
                               (cape-capf-noninterruptible
-                               (cape-capf-nonexclusive
-                                #'eglot-completion-at-point))))))))
+                               (cape-capf-super
+                                #'eglot-completion-at-point
+                                #'cape-dabbrev
+                                #'yasnippet-capf))))))))
 #+end_src
 
 ** Eglot Booster
