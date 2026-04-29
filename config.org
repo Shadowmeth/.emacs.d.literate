@@ -645,7 +645,7 @@ of the Vertico minibuffer UI.
     (corfu-popupinfo-delay 0.1)
     (corfu-preselect nil)
     (corfu-quit-no-match t)
-    (corfu-on-exact-match nil)
+    (corfu-on-exact-match 'show)
     (tab-always-indent 'complete) ;; Emacs thing, not Corfu. TAB tries to indent first and then auto-complete.
     (corfu-quit-at-boundary nil) ;; Use the separator in Corfu completions.
     :bind
@@ -752,12 +752,12 @@ capf extensions for corfu.
                 (setq-local completion-at-point-functions
                             (list
                              #'cape-file
+                             #'cape-dabbrev
+                             #'yasnippet-capf
                              (cape-capf-buster
                               (cape-capf-noninterruptible
-                               (cape-capf-super
-                                #'eglot-completion-at-point
-                                #'yasnippet-capf
-                                #'cape-dabbrev))))))))
+                               (cape-capf-nonexclusive
+                                #'eglot-completion-at-point))))))))
 #+end_src
 
 ** Eglot Booster
