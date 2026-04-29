@@ -309,6 +309,13 @@ All the modes that are needed and don't come pre-installed go here.
   (use-package rust-mode)
 #+end_src
 
+** Sudo Edit
+Edit files as root user. Do *M-x sudo-edit*
+
+#+begin_src emacs-lisp
+  (use-package sudo-edit)
+#+end_src
+
 ** Garbage Collector Magic Hack (gcmh)
 Try to defer GC as much as possible. We try to do GC when idle and increase the maximum memory that can be allocated before
 requiring GC trigger. An interactive helper function *my/time-since-last-gc* is also defined that shows the time since the last
