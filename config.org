@@ -311,6 +311,7 @@ All the modes that are needed and don't come pre-installed go here.
 (use-package rust-mode)
 (use-package typescript-mode)
 (use-package jtsx)
+(use-package git-modes)
 #+end_src
 
 ** Sudo Edit
