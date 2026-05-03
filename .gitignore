@@ -4,6 +4,7 @@ elpa/
 transient/
 straight/
 .cache/
+tree-sitter/
 
 projects
 bookmarks
