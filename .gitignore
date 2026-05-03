@@ -5,6 +5,7 @@ transient/
 straight/
 .cache/
 
+projects
 bookmarks
 tramp
 history
