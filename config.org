@@ -43,6 +43,13 @@ Clearly show the whitespaces.
   (add-hook 'prog-mode-hook #'whitespace-mode))
 #+end_src
 
+** Context Menu Mode
+Built-in mode that shows context based options when right click on mouse is pressed.
+
+#+begin_src emacs-lisp
+(context-menu-mode +1)
+#+end_src
+
 ** Dired Configuration
 Configuration and enhancements for Dired.
 
@@ -249,7 +256,8 @@ global minor mode.
 Configuration for Eldoc Mode. This is a built-in mode. Displays information about variables / functions in mninibuffer.
 
 #+begin_src emacs-lisp
-(setq eldoc-idle-delay 0.1)
+(setq eldoc-idle-delay 0.3)
+(setq eldoc-documentation-strategy #'eldoc-documentation-compose)
 (add-hook 'prog-mode-hook #'eldoc-mode) ;; Enable eldoc-mode for all programming modes.
 #+end_src
 
@@ -475,9 +483,7 @@ Fuzzy matching in Emacs.
 (use-package orderless
   :custom
   (completion-styles '(orderless partial-completion basic))
-  (completion-category-overrides '((eglot (styles orderless))
-                                   (eglot-capf (styles orderless))
-                                   (file (styles partial-completion))))
+  (completion-category-overrides '((file (styles partial-completion))))
   (completion-category-defaults nil) ;; Disable defaults, use our settings.
   (completion-pcm-leading-wildcard t)) ;; Emacs 31: partial-completion behaves like substring.
 #+end_src
@@ -744,11 +750,19 @@ capf extensions for corfu.
   (advice-add #'yasnippet-capf            :around #'cape-wrap-noninterruptible)
   (advice-add #'cape-dabbrev              :around #'cape-wrap-noninterruptible)
   (advice-add #'cape-keyword              :around #'cape-wrap-noninterruptible)
-  (advice-add #'cape-file                 :around #'cape-wrap-noninterruptible))
+  (advice-add #'cape-file                 :around #'cape-wrap-noninterruptible)
 
   ;; When LSP mode manages a buffer, set up a composed CAPF that combines
   ;; LSP completions with snippets, dabbrev, and keywords.
-  
+  (add-hook 'lsp-completion-mode-hook (lambda ()
+                                        (setq-local completion-at-point-functions
+                                                    (list
+                                                     #'cape-file
+                                                     (cape-capf-noninterruptible
+                                                      (cape-capf-super
+                                                       #'lsp-completion-at-point
+                                                       #'yasnippet-capf
+                                                       #'cape-dabbrev)))))))
 #+end_src
 
 ** Emacs LSP Booster
@@ -792,14 +806,48 @@ Uses *emacs-lsp-booster* to grealy improve LSP performance.
 LSP client for Emacs.
 
 #+begin_src emacs-lisp
+(use-package lsp-mode
+  :init
+  (setq lsp-keymap-prefix "C-l")
+  (defun my/lsp-mode-setup-completion ()
+    (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
+          '(orderless)))
+  :hook (
+         (c-mode . lsp)
+         (c++-mode . lsp)
 
+         (lsp-completion-mode . my/lsp-mode-setup-completion)
+         (lsp-mode . lsp-enable-which-key-integration))
+  :commands (lsp lsp-deferred)
+  :config
+  ;; We use Corfu!
+  (setq lsp-completion-provider :none))
+#+end_src
+
+** LSP Mode Goodies
+Enhance LSP experience with lsp-ui and lsp-treemacs.
+
+#+begin_src emacs-lisp
+(use-package lsp-ui
+  :commands lsp-ui-mode)
+
+;; This will automatically install treemacs as dependency
+(use-package lsp-treemacs
+  :commands lsp-treemacs-errors-list)
 #+end_src
 
 ** Language Server Configurations
 Language server configurations for the required major modes comes here.
 
 #+begin_src emacs-lisp
-
+(with-eval-after-load 'lsp-mode
+  (setq lsp-clients-clangd-args
+        '("-j=4"
+          "--background-index"
+          "--clang-tidy"
+          "--completion-style=detailed"
+          "--header-insertion=never"
+          "--header-insertion-decorators=0")))
 #+end_src
 
 * Modes Configuration

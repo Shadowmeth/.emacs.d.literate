@@ -22,5 +22,8 @@
 (when (display-graphic-p)
   (set-frame-parameter nil 'fullscreen 'maximized))
 
+;; Use native JSON parsing for LSP mode
+(setenv "LSP_USE_PLISTS" "false")
+
 (provide 'early-init)
 ;;; early-init.el ends here
