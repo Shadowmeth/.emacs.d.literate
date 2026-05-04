@@ -86,11 +86,11 @@ Use Iosevka nerd font if it exists.
 #+end_src
 
 ** Theme Settings
-Use *doom-moonlight* as the default theme.
+Set the default theme.
 
 #+begin_src emacs-lisp
 (use-package doom-themes)
-(load-theme 'doom-moonlight t)
+(load-theme 'doom-old-hope t)
 #+end_src
 
 ** Disable Native Compilation Warnings
