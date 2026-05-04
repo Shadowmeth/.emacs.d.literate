@@ -250,11 +250,7 @@ Configuration for Eldoc Mode. This is a built-in mode. Displays information abou
 
 #+begin_src emacs-lisp
 (setq eldoc-idle-delay 0.1)
-;; Skip showing documentation in the echo area if the dedicated documentation buffer is already displayed in some window.
-(setq eldoc-echo-area-prefer-doc-buffer t)
-(setq eldoc-echo-area-use-multiline-p 4)
 (add-hook 'prog-mode-hook #'eldoc-mode) ;; Enable eldoc-mode for all programming modes.
-(setq eldoc-documentation-strategy #'eldoc-documentation-enthusiast)
 #+end_src
 
 ** Repeat Mode
@@ -682,17 +678,6 @@ of the Vertico minibuffer UI.
   (corfu-history-mode))
 #+end_src
 
-** Flymake Customization
-This is a built-in mode.
-
-#+begin_src emacs-lisp
-;; Disable line squiggles.
-(with-eval-after-load 'flymake
-  (set-face-attribute 'flymake-error nil :underline nil)
-  (set-face-attribute 'flymake-warning nil :underline nil)
-  (set-face-attribute 'flymake-note nil :underline nil))
-#+end_src
-
 ** Flycheck
 This is the modern replacement for Flymake. It supports a lot more features and a lot more languages than flymake. Sadly
 Flycheck doesn't work out of the box with Eglot and some modes so we will need to do some work to get the integration right.
@@ -756,202 +741,66 @@ capf extensions for corfu.
   (add-hook 'completion-at-point-functions #'cape-keyword)
   (add-hook 'completion-at-point-functions #'yasnippet-capf)
   :config
-  (advice-add #'eglot-completion-at-point :around #'cape-wrap-noninterruptible)
   (advice-add #'yasnippet-capf            :around #'cape-wrap-noninterruptible)
   (advice-add #'cape-dabbrev              :around #'cape-wrap-noninterruptible)
   (advice-add #'cape-keyword              :around #'cape-wrap-noninterruptible)
-  (advice-add #'cape-file                 :around #'cape-wrap-noninterruptible)
+  (advice-add #'cape-file                 :around #'cape-wrap-noninterruptible))
 
-  ;; When Eglot manages a buffer, set up a composed CAPF that combines
+  ;; When LSP mode manages a buffer, set up a composed CAPF that combines
   ;; LSP completions with snippets, dabbrev, and keywords.
-  (add-hook 'eglot-managed-mode-hook
-            (lambda ()
-              (setq-local completion-at-point-functions
-                          (list
-                           #'cape-file
-                           (cape-capf-buster
-                            (cape-capf-noninterruptible
-                             (cape-capf-super
-                              #'eglot-completion-at-point
-                              #'cape-dabbrev
-                              #'yasnippet-capf))))))))
+  
 #+end_src
 
-** Eglot Booster
+** Emacs LSP Booster
 Uses *emacs-lsp-booster* to grealy improve LSP performance.
 
 #+begin_src emacs-lisp
-(use-package eglot-booster
-  :straight (:host github :repo "jdtsmith/eglot-booster")
-  :after eglot
-  :config
-  (setq eglot-booster-io-only t)
-  (eglot-booster-mode))
+(defun lsp-booster--advice-json-parse (old-fn &rest args)
+  "Try to parse bytecode instead of json."
+  (or
+   (when (equal (following-char) ?#)
+     (let ((bytecode (read (current-buffer))))
+       (when (byte-code-function-p bytecode)
+         (funcall bytecode))))
+   (apply old-fn args)))
+
+(advice-add (if (progn (require 'json)
+                       (fboundp 'json-parse-buffer))
+                'json-parse-buffer
+              'json-read)
+            :around
+            #'lsp-booster--advice-json-parse)
+
+(defun lsp-booster--advice-final-command (old-fn cmd &optional test?)
+  "Prepend emacs-lsp-booster command to lsp CMD."
+  (let ((orig-result (funcall old-fn cmd test?)))
+    (if (and (not test?)                             ;; for check lsp-server-present?
+             (not (file-remote-p default-directory)) ;; see lsp-resolve-final-command, it would add extra shell wrapper
+             lsp-use-plists
+             (not (functionp 'json-rpc-connection))  ;; native json-rpc
+             (executable-find "emacs-lsp-booster"))
+        (progn
+          (when-let ((command-from-exec-path (executable-find (car orig-result))))  ;; resolve command from exec-path (in case not found in $PATH)
+            (setcar orig-result command-from-exec-path))
+          (message "Using emacs-lsp-booster for %s!" orig-result)
+          (append '("emacs-lsp-booster" "--disable-bytecode" "--") orig-result))
+      orig-result)))
+(advice-add 'lsp-resolve-final-command :around #'lsp-booster--advice-final-command)
 #+end_src
 
-** Eglot
-Native built-in LSP client for Emacs.
+** LSP Mode
+LSP client for Emacs.
 
 #+begin_src emacs-lisp
-(use-package eglot
-  :ensure nil ;; Already built-in in Emacs 29+.
-  :hook ((
-          c-mode
-          c-ts-mode
-          c++-mode
-          c++-ts-mode
-          python-mode
-          python-ts-mode
-          rust-mode
-          rust-ts-mode
-          java-mode
-          java-ts-mode
-          typescript-mode
-          typescript-ts-mode
-          javascript-mode
-          js-ts-mode
-          jtsx-tsx-mode
-          jtsx-jsx-mode
-          ) . eglot-ensure)
-  :bind (:map eglot-mode-map
-              ("C-c l a" . eglot-code-actions)
-              ("C-c l r" . eglot-rename)
-              ("C-c l f" . eglot-format-buffer)
-              ("C-c l F" . eglot-format)
-              ("C-c l n" . flymake-goto-next-error)
-              ("C-c l p" . flymake-goto-prev-error)
-              ("C-c l t" . eglot-find-typeDefinition)
-              ("C-c l i" . eglot-find-implementation)
-              ("C-c l x" . eglot-find-declaration))
-  :custom
-  (eglot-report-progress nil)
-  (eglot-confirm-server-initiated-edits nil)
-  (eglot-autoshutdown t)
-  (eglot-extend-to-xref t)
-  :config
-  (add-hook 'eglot-managed-mode-hook
-            (lambda ()
-              (eglot-inlay-hints-mode -1)))
-  (setq eglot-events-buffer-config '(:size 0 :format full))
-  (setq eglot-ignored-server-capabilities
-        '(:documentHighlightProvider
-          :documentOnTypeFormattingProvider)))
-#+end_src
 
-** Eglot Signature Eldoc Talkative
-Display eglot documentation in echo area.
-
-#+begin_src emacs-lisp
-(use-package eglot-signature-eldoc-talkative)
-(advice-add #'eglot-signature-eldoc-function
-            :override #'eglot-signature-eldoc-talkative)
 #+end_src
 
 ** Language Server Configurations
 Language server configurations for the required major modes comes here.
 
 #+begin_src emacs-lisp
-(with-eval-after-load 'eglot
-  ;; sudo apt install clangd
-  ;; or sudo dnf in -y clang-tools-extra
-  (add-to-list 'eglot-server-programs
-               '((c-mode c++-mode c-ts-mode c++-ts-mode)
-                 . ("clangd"
-                    "-j=4"
-                    "--background-index"
-                    "--clang-tidy"
-                    "--completion-style=detailed"
-                    "--header-insertion=never"
-                    "--header-insertion-decorators=0")))
-  ;; pip install basedpyright
-  (add-to-list 'eglot-server-programs
-               '((python-mode python-ts-mode)
-                 . ("basedpyright-langserver"
-                    "--stdio")))
-  ;; npm i -g typescript typescript-language-server
-  (add-to-list 'eglot-server-programs
-               '((typescript-mode typescript-ts-mode)
-                 . ("typescript-language-server"
-                    "--stdio")))
-  (setq-default eglot-workspace-configuration
-                '(:basedpyright
-                  (:analysis
-                   (:autoSearchPaths t
-                                     :diagnosticMode "openFilesOnly")))))
+
 #+end_src
-
-** Clean LSP Documentation
-Clean up the LSP documentation for Eldoc. Eldoc can't handle embedded HTML and shows the text as is for some
-LSPs (such as basedpyright). This advice clears the entities.
-
-#+begin_src emacs-lisp :tangle no
-(defun my/decode-html-entities-string (s)
-  "Decode HTML entities in string S, returning the decoded string."
-  (with-temp-buffer
-    (insert s)
-    ;; Named entities
-    (goto-char (point-min))
-    (while (re-search-forward "&\\([a-zA-Z][a-zA-Z0-9]*\\);" nil t)
-      (let* ((name (match-string 1))
-             (char (cdr (assoc name '(("nbsp"   . 32)
-                                      ("lt"     . 60)
-                                      ("gt"     . 62)
-                                      ("amp"    . 38)
-                                      ("quot"   . 34)
-                                      ("apos"   . 39)
-                                      ("mdash"  . 8212)
-                                      ("ndash"  . 8211)
-                                      ("hellip" . 8230)
-                                      ("copy"   . 169)
-                                      ("reg"    . 174)
-                                      ("trade"  . 8482))))))
-        (when char
-          (replace-match (char-to-string char) t t))))
-    ;; Numeric entities (decimal): &#39;
-    (goto-char (point-min))
-    (while (re-search-forward "&#\\([0-9]+\\);" nil t)
-      (replace-match (char-to-string (string-to-number (match-string 1)))
-                     t t))
-    ;; Numeric entities (hex): &#x27;
-    (goto-char (point-min))
-    (while (re-search-forward "&#x\\([0-9a-fA-F]+\\);" nil t)
-      (replace-match (char-to-string (string-to-number (match-string 1) 16))
-                     t t))
-    (buffer-string)))
-
-(defun my/eglot-decode-html-entities (orig-fn markup)
-  "Decode HTML entities in MARKUP before passing to ORIG-FN.
-  Handles the various shapes Eglot may receive markup in:
-    - Plain strings
-    - LSP MarkupContent plists like (:kind \"markdown\" :value \"...\")
-    - Cons cells like (\"string\" . properties)"
-  (let ((decoded
-         (cond
-          ;; Plain string
-          ((stringp markup)
-           (my/decode-html-entities-string markup))
-          ;; Plist with :value (LSP MarkupContent form)
-          ((and (listp markup) (plist-member markup :value))
-           (let ((copy (copy-sequence markup)))
-             (plist-put copy :value
-                        (my/decode-html-entities-string
-                         (plist-get copy :value)))
-             copy))
-          ;; Cons cell with a string in the car
-          ((and (consp markup) (stringp (car markup)))
-           (cons (my/decode-html-entities-string (car markup))
-                 (cdr markup)))
-          ;; Anything else — pass through unchanged
-          (t markup))))
-    (funcall orig-fn decoded)))
-
-;; Always remove first, then re-add — ensures the advice points at the
-;; current definition of the function, not a stale one from a previous
-;; evaluation.
-(advice-remove 'eglot--format-markup #'my/eglot-decode-html-entities)
-(advice-add 'eglot--format-markup :around #'my/eglot-decode-html-entities)
-#+end_src
-
 
 * Modes Configuration
 Language specific modes configuration goes here.
