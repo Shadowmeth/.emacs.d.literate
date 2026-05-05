@@ -118,6 +118,23 @@ Disable some built-in modes that we don't use.
 (scroll-bar-mode -1)
 #+end_src
 
+** Smooth Mouse Scrolling
+Disable mouse acceleration and scroll the window which has cursor instead of focused one.
+
+#+begin_src emacs-lisp
+(setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
+(setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
+#+end_src
+
+** Highlight Current Line
+Highlights the line which has cursor. This is not great for normal editing but for special-purpose selection buffers it works
+great. This is a built-in mode.
+
+#+begin_src emacs-lisp
+(add-hook 'dired-mode-hook 'hl-line-mode)
+(add-hook 'package-menu-mode-hook 'hl-line-mode)
+#+end_src
+
 ** Modern org look
 Make org buffers fancy. We globally enable org-modern for all org buffers. org-modern-indent requires org-indent to be enabled.
 Setting org-startup-idented to *t* makes all org-mode buffers start org-indent mode automatically at start.
@@ -385,6 +402,7 @@ View pdfs in Emacs. We remember the position in the pdf too with *save-place-mod
 
 (use-package pdf-tools
   :config
+  (add-hook 'pdf-view-mode-hook #'pdf-view-roll-minor-mode)
   (pdf-loader-install)) ;; On demand loading. Leads to faster startup time.
 #+end_src
 
