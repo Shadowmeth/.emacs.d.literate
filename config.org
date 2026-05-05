@@ -275,6 +275,7 @@ Configuration for Eldoc Mode. This is a built-in mode. Displays information abou
 #+begin_src emacs-lisp
 (setq eldoc-idle-delay 0.3)
 (setq eldoc-documentation-strategy #'eldoc-documentation-compose)
+(setq eldoc-echo-area-use-multiline-p nil)
 (add-hook 'prog-mode-hook #'eldoc-mode) ;; Enable eldoc-mode for all programming modes.
 #+end_src
 
@@ -319,7 +320,7 @@ Configuration for the compile commands.
 Adjustments to make Emacs faster.
 
 #+begin_src emacs-lisp
-(setq read-process-output-max (* 1024 1024)) ;; Increase amount of data Emacs reads from a process (1 mb).
+(setq read-process-output-max (* 4 1024 1024)) ;; Increase amount of data Emacs reads from a process (4 MB).
 #+end_src
 
 * Packages
@@ -839,7 +840,17 @@ LSP client for Emacs.
   :commands (lsp lsp-deferred)
   :config
   ;; We use Corfu!
-  (setq lsp-completion-provider :none))
+  (setq lsp-completion-provider :none)
+  (setq lsp-log-io nil)
+  (setq lsp-idle-delay 0.1)
+  (setq lsp-auto-execute-action nil)
+  (setq lsp-enable-on-type-formatting nil)
+  (setq lsp-enable-file-watchers nil)
+  (setq lsp-enable-indentation nil)
+  (setq lsp-inlay-hint-enable nil)
+  (setq lsp-headerline-breadcrumb-enable nil)
+  (setq lsp-enable-symbol-highlighting nil)
+  (setq lsp-semantic-tokens-enable nil))
 #+end_src
 
 ** LSP Mode Goodies
@@ -859,6 +870,8 @@ Language server configurations for the required major modes comes here.
 
 #+begin_src emacs-lisp
 (with-eval-after-load 'lsp-mode
+  (define-key lsp-mode-map (kbd "C-l") lsp-command-map)
+  
   (setq lsp-clients-clangd-args
         '("-j=4"
           "--background-index"
