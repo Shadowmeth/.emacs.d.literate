@@ -383,6 +383,16 @@ GC trigger.
   (gcmh-mode +1))
 #+end_src
 
+** Whitespace Butler Mode
+Remove trailing whitespace.
+
+#+begin_src emacs-lisp
+(use-package ws-butler
+  :config
+  (setq ws-butler-keep-whitespace-before-point nil)
+  (add-hook 'prog-mode-hook #'ws-butler-mode))
+#+end_src
+
 ** Exec Path From Shell
 Get shell environment variables.
 
