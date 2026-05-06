@@ -890,6 +890,13 @@ Language server configurations for the required major modes comes here.
           "--completion-style=detailed"
           "--header-insertion=never"
           "--header-insertion-decorators=0")))
+
+(use-package lsp-pyright
+  :custom (lsp-pyright-langserver-command "basedpyright")
+  :config
+  :hook ((python-mode python-ts-mode) . (lambda ()
+                         (require 'lsp-pyright)
+                         (lsp))))
 #+end_src
 
 * Modes Configuration
