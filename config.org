@@ -860,7 +860,8 @@ LSP client for Emacs.
   (setq lsp-inlay-hint-enable nil)
   (setq lsp-headerline-breadcrumb-enable nil)
   (setq lsp-enable-symbol-highlighting nil)
-  (setq lsp-semantic-tokens-enable nil))
+  (setq lsp-semantic-tokens-enable nil)
+  (setq lsp-signature-render-documentation nil))
 #+end_src
 
 ** LSP Mode Goodies
