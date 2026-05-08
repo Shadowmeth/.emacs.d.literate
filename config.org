@@ -310,10 +310,19 @@ All the indentation settings for every mode goes here.
 Configuration for the compile commands.
 
 #+begin_src emacs-lisp
+(require 'compile)
 (setq compilation-always-kill t) ;; Kill previous compilation process before starting new one.
 (setq compilation-scroll-output t) ;; Automatically go to end of the compilation buffer.
 (global-set-key (kbd "<f5>") #'compile)
 (global-set-key (kbd "<f6>") #'recompile)
+
+(defun my/switch-to-compilation-buffer (&rest _)
+  "Switch to *compilation* buffer after compile command."
+  (when-let ((buf (get-buffer "*compilation*")))
+    (switch-to-buffer-other-window buf)))
+
+(advice-add 'compile :after #'my/switch-to-compilation-buffer)
+(advice-add 'recompile :after #'my/switch-to-compilation-buffer)
 #+end_src
 
 ** Performance Tweaks
