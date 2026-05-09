@@ -343,6 +343,7 @@ All the modes that are needed and don't come pre-installed go here.
 (use-package typescript-mode)
 (use-package jtsx)
 (use-package git-modes)
+(use-package racket-mode)
 #+end_src
 
 ** Treesitter Configuration
@@ -686,6 +687,19 @@ Context aware actions.
 
 ;; Consult users will also want the embark-consult package.
 (use-package embark-consult) ; only need to install it, embark loads it after consult if found
+#+end_src
+
+** Paredit
+Structural editing of LISP-like languages.
+
+#+begin_src emacs-lisp
+(use-package paredit
+  :config
+  (add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
+  (add-hook 'lisp-mode-hook 'enable-paredit-mode)
+  (add-hook 'lisp-interaction-mode-hook 'enable-paredit-mode)
+  (add-hook 'scheme-mode-hook 'enable-paredit-mode)
+  (add-hook 'racket-mode-hook 'enable-paredit-mode))
 #+end_src
 
 ** Corfu
