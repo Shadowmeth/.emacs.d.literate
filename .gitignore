@@ -16,6 +16,7 @@ desktops/
 debug-adapters/
 .cache/
 tree-sitter/
+emms/
 
 .lsp-session-*
 dape-breakpoints

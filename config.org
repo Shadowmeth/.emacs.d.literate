@@ -62,8 +62,9 @@ Configuration and enhancements for Dired.
 (setq dired-listing-switches "-alh")
 (setq dired-kill-when-opening-new-dired-buffer t) ;; Reduce number of dired buffers open.
 ;; Hide dot files automatically on opening Dired buffers, use C-x M-o to toggle.
+(setq dired-omit-files
+      (concat dired-omit-files "\\|^\\..+$"))
 (add-hook 'dired-mode-hook #'dired-omit-mode)
-
 #+end_Src
 
 ** Disable Backup and Temp Files
