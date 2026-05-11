@@ -758,11 +758,6 @@ Flycheck doesn't work out of the box with Eglot and some modes so we will need t
     (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
   (with-eval-after-load 'rust-ts-mode
     (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
-
-(use-package flycheck-eglot
-  :after (flycheck eglot)
-  :config
-  (global-flycheck-eglot-mode +1))
 #+end_src
 
 ** Yasnippets
