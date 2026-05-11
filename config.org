@@ -893,7 +893,9 @@ Enhance LSP experience with lsp-ui and lsp-treemacs.
 
 #+begin_src emacs-lisp
 (use-package lsp-ui
-  :commands lsp-ui-mode)
+  :commands lsp-ui-mode
+  :config
+  (setq lsp-ui-sideline-delay 1.0))
 
 ;; This will automatically install treemacs as dependency
 (use-package lsp-treemacs
