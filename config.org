@@ -748,8 +748,8 @@ Flycheck doesn't work out of the box with Eglot and some modes so we will need t
 (use-package flycheck
   :config
   (setq
-   flycheck-idle-delay-change 0.3
-   flycheck-display-errors-delay 0.3
+   flycheck-idle-change-delay 1.0
+   flycheck-display-errors-delay 1.0
    flycheck-highlighting-mode nil))
 
 (use-package flycheck-rust
@@ -876,7 +876,7 @@ LSP client for Emacs.
   ;; We use Corfu!
   (setq lsp-completion-provider :none)
   (setq lsp-log-io nil)
-  (setq lsp-idle-delay 0.1)
+  (setq lsp-idle-delay 1.0)
   (setq lsp-auto-execute-action nil)
   (setq lsp-enable-on-type-formatting nil)
   (setq lsp-enable-file-watchers nil)
