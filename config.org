@@ -930,6 +930,20 @@ Language server configurations for the required major modes comes here.
 (setq lsp-rust-analyzer-cargo-watch-enable nil)
 #+end_src
 
+** DAP Mode
+Debug Adapter Protocol (DAP) configuration for various languages.
+
+#+begin_src emacs-lisp
+(use-package dap-mode
+  :config
+  ;; Enabling only some features
+  (setq dap-auto-configure-features '(locals controls tooltip))
+  (dap-auto-configure-mode)
+  ;; C, C++, Rust
+  (require 'dap-cpptools)
+  (dap-cpptools-setup))
+#+end_src
+
 * Modes Configuration
 Language specific modes configuration goes here.
 
