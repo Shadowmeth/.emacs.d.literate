@@ -942,6 +942,104 @@ Debug Adapter Protocol (DAP) configuration for various languages.
   ;; C, C++, Rust
   (require 'dap-cpptools)
   (dap-cpptools-setup))
+
+;; Constrain the output/vterm window (the real screen-hog — not a dap-ui buffer)
+(with-eval-after-load 'dap-mode
+  (setq dap-output-window-min-height 2
+        dap-output-window-max-height 4))
+
+;; Make the interaction buffer (stdio/stdin) smaller
+(add-to-list 'display-buffer-alist
+             '("\\*.*::.*Configuration"
+               (display-buffer-in-side-window)
+               (side . bottom)
+               (slot . 0)
+               (window-height . 0.15)
+               (window-parameters . ((no-other-window . t)))))
+
+;; Customize dap-ui buffer sizes (locals, expressions, sessions, breakpoints, repl)
+(with-eval-after-load 'dap-ui
+  (setq dap-ui-buffer-configurations
+        '(("*dap-ui-locals*"
+           (side . right) (slot . 1) (window-width . 0.18))
+          ("*dap-ui-expressions*"
+           (side . right) (slot . 2) (window-width . 0.18))
+          ("*dap-ui-sessions*"
+           (side . right) (slot . 3) (window-width . 0.18))
+          ("*dap-ui-breakpoints*"
+           (side . right) (slot . 4) (window-width . 0.18))
+          ("*debug-window*"
+           (side . bottom) (slot . 2) (window-height . 0.18))
+          ("*dap-ui-repl*"
+           (side . bottom) (slot . 1) (window-height . 0.25)))))
+
+;; Keymap
+(with-eval-after-load 'dap-mode
+  ;; Disable the hydra that pops up automatically
+  (remove-hook 'dap-stopped-hook 'dap-hydra)
+
+  ;; Main prefix map — mirrors dape's command map style
+  (define-prefix-command 'my/dap-map)
+  (global-set-key (kbd "C-x C-a") 'my/dap-map)
+
+  ;; Session control
+  (define-key my/dap-map (kbd "d")   #'dap-debug) ; start debugging (dape: dape)
+  (define-key my/dap-map (kbd "D")   #'dap-debug-last) ; rerun last config
+  (define-key my/dap-map (kbd "e")   #'dap-debug-edit-template) ; edit launch config
+  (define-key my/dap-map (kbd "q")   #'dap-disconnect) ; quit/disconnect (dape: dape-quit)
+  (define-key my/dap-map (kbd "Q")   #'dap-delete-all-sessions) ; kill all sessions
+  (define-key my/dap-map (kbd "k")   #'dap-delete-session) ; kill current session
+
+  ;; Stepping — matches dape's n/s/o/c
+  (define-key my/dap-map (kbd "n")   #'dap-next) ; step over     (dape: dape-next)
+  (define-key my/dap-map (kbd "s")   #'dap-step-in) ; step in       (dape: dape-step-in)
+  (define-key my/dap-map (kbd "o")   #'dap-step-out) ; step out      (dape: dape-step-out)
+  (define-key my/dap-map (kbd "c")   #'dap-continue) ; continue      (dape: dape-continue)
+  (define-key my/dap-map (kbd "r")   #'dap-restart-frame) ; restart frame (dape: dape-restart)
+  (define-key my/dap-map (kbd "p")   #'dap-pause) ; pause         (dape: dape-pause)
+
+  ;; Breakpoints — dape uses b/B
+  (define-key my/dap-map (kbd "b")   #'dap-breakpoint-toggle) ; toggle bp at point
+  (define-key my/dap-map (kbd "B")   #'dap-breakpoint-delete-all)
+  (define-key my/dap-map (kbd "C-b") #'dap-breakpoint-condition)
+  (define-key my/dap-map (kbd "l")   #'dap-breakpoint-log-message)
+  (define-key my/dap-map (kbd "h")   #'dap-breakpoint-hit-condition)
+
+  ;; Evaluation / inspection — dape: e for eval, R for REPL
+  (define-key my/dap-map (kbd "E")   #'dap-eval) ; eval expression
+  (define-key my/dap-map (kbd "C-e") #'dap-eval-region)
+  (define-key my/dap-map (kbd "C-t") #'dap-eval-thing-at-point)
+  (define-key my/dap-map (kbd "R")   #'dap-ui-repl) ; open REPL
+
+  ;; Stack / threads — dape: < > for stack frames
+  (define-key my/dap-map (kbd "<")   #'dap-up-stack-frame)
+  (define-key my/dap-map (kbd ">")   #'dap-down-stack-frame)
+  (define-key my/dap-map (kbd "t")   #'dap-switch-thread)
+  (define-key my/dap-map (kbd "S")   #'dap-switch-stack-frame)
+  (define-key my/dap-map (kbd "f")   #'dap-switch-session)
+
+  ;; Watch expressions — dape: w
+  (define-key my/dap-map (kbd "w")   #'dap-ui-expressions-add)
+  (define-key my/dap-map (kbd "W")   #'dap-ui-expressions-remove)
+
+  ;; UI toggles — dape: m for memory, info windows etc.
+  (define-key my/dap-map (kbd "v")   #'dap-ui-locals)
+  (define-key my/dap-map (kbd "V")   #'dap-ui-expressions)
+  (define-key my/dap-map (kbd "T")   #'dap-ui-sessions)
+  (define-key my/dap-map (kbd "I")   #'dap-ui-breakpoints)
+  (define-key my/dap-map (kbd "u")   #'dap-ui-show-many-windows)
+  (define-key my/dap-map (kbd "U")   #'dap-ui-hide-many-windows))
+
+(defvar my/dap-repeat-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "n") #'dap-next)
+    (define-key map (kbd "s") #'dap-step-in)
+    (define-key map (kbd "o") #'dap-step-out)
+    (define-key map (kbd "c") #'dap-continue)
+    map))
+
+(dolist (cmd '(dap-next dap-step-in dap-step-out dap-continue))
+  (put cmd 'repeat-map 'my/dap-repeat-map))
 #+end_src
 
 * Modes Configuration
