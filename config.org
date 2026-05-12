@@ -943,7 +943,6 @@ C/C++ modes configuration.
   (define-key c++-mode-map (kbd "TAB") #'indent-for-tab-command))
 #+end_src
 
-
 ** JS/TS and JSX/TSX
 Configure jsx and tsx files to use the jtsx modes.
 
