@@ -54,6 +54,10 @@ Built-in mode that shows context based options when right click on mouse is pres
 Optimize the default built-in document viewer in Emacs. We use mupdf-tools to render the pdfs.
 
 #+begin_src emacs-lisp
+(use-package saveplace-pdf-view
+  :config
+  (save-place-mode 1))
+
 (with-eval-after-load 'doc-view
   (setq doc-view-continuous t
         doc-view-resolution 200
