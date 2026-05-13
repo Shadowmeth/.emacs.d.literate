@@ -50,6 +50,16 @@ Built-in mode that shows context based options when right click on mouse is pres
 (context-menu-mode +1)
 #+end_src
 
+** Doc-View Mode
+Optimize the default built-in document viewer in Emacs. We use mupdf-tools to render the pdfs.
+
+#+begin_src emacs-lisp
+(with-eval-after-load 'doc-view
+  (setq doc-view-continuous t
+        doc-view-resolution 200
+        doc-view-mupdf-use-svg t))
+#+end_src
+
 ** Dired Configuration
 Configuration and enhancements for Dired.
 
