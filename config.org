@@ -980,7 +980,6 @@ Debug Adapter Protocol (DAP) configuration for various languages.
 
   ;; Main prefix map — mirrors dape's command map style
   (define-prefix-command 'my/dap-map)
-  (global-set-key (kbd "C-x C-a") 'my/dap-map)
 
   ;; Session control
   (define-key my/dap-map (kbd "d")   #'dap-debug) ; start debugging (dape: dape)
@@ -1029,6 +1028,9 @@ Debug Adapter Protocol (DAP) configuration for various languages.
   (define-key my/dap-map (kbd "I")   #'dap-ui-breakpoints)
   (define-key my/dap-map (kbd "u")   #'dap-ui-show-many-windows)
   (define-key my/dap-map (kbd "U")   #'dap-ui-hide-many-windows))
+
+(with-eval-after-load 'lsp-mode
+  (define-key lsp-mode-map (kbd "C-x C-a") 'my/dap-map))
 
 (defvar my/dap-repeat-map
   (let ((map (make-sparse-keymap)))
