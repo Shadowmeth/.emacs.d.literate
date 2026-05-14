@@ -362,6 +362,8 @@ All the modes that are needed and don't come pre-installed go here.
 (use-package jtsx)
 (use-package git-modes)
 (use-package racket-mode)
+(use-package cmake-mode)
+(use-package haskell-mode)
 #+end_src
 
 ** Treesitter Configuration
