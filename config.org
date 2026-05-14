@@ -1087,5 +1087,4 @@ Emacs to confirm whether it's a reload artifact or a real bug in the config.
            (message "Eval'd buffer %s" (buffer-name)))
          (load-file user-init-file)
          (message "Loaded %s from disk" user-init-file))))
-(message "THIS WORKS")
 #+end_src
