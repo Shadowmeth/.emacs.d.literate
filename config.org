@@ -1064,3 +1064,26 @@ Configure jsx and tsx files to use the jtsx modes.
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . jtsx-tsx-mode))
 (add-to-list 'auto-mode-alist '("\\.jsx\\'" . jtsx-jsx-mode))
 #+end_src
+
+* My Configuration
+All the useful snippets of codes that I have written over the years go here. This should be the last
+thing in the config obviously.
+
+** Reload Emacs Config
+Interactive function to reload config changes. This is additive so most things work fine but
+stuff like *setq-default* and *defvar* and pushing into lists might cause weird behaviour. Restart
+Emacs to confirm whether it's a reload artifact or a real bug in the config.
+
+#+begin_src emacs-lisp
+(defun my/reload-init ()
+  "Eval init.el, using the open buffer if it exists, else loading from disk."
+  (interactive)
+  (let ((buf (find-buffer-visiting user-init-file)))
+    (if buf
+         (with-current-buffer buf
+           (eval-buffer)
+           (message "Eval'd buffer %s" (buffer-name)))
+         (load-file user-init-file)
+         (message "Loaded %s from disk" user-init-file))))
+(message "THIS WORKS")
+#+end_src
