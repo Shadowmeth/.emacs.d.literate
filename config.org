@@ -870,6 +870,7 @@ LSP client for Emacs.
          (c++-mode . lsp)
          (rust-mode . lsp)
          (rust-ts-mode . lsp)
+         (cmake-mode . lsp)
 
          (lsp-completion-mode . my/lsp-mode-setup-completion)
          (lsp-mode . lsp-enable-which-key-integration))
@@ -912,6 +913,8 @@ Language server configurations for the required major modes comes here.
 (define-key lsp-mode-map (kbd "C-l") lsp-command-map)
 
 ;; C/C++
+;; sudo apt install clangd
+;; sudo dnf in clang-tools-extra
 (setq lsp-clients-clangd-args
       '("-j=4"
         "--background-index"
@@ -921,6 +924,7 @@ Language server configurations for the required major modes comes here.
         "--header-insertion-decorators=0"))
 
 ;; Python
+;; pip install basedpyright
 (use-package lsp-pyright
   :custom (lsp-pyright-langserver-command "basedpyright")
   :config
@@ -929,7 +933,21 @@ Language server configurations for the required major modes comes here.
                                           (lsp))))
 
 ;; Rust
+;; rustup component add rust-analyzer
 (setq lsp-rust-analyzer-cargo-watch-enable nil)
+
+;; CMake
+;; cargo install neocmakelsp
+(with-eval-after-load 'lsp-mode
+  (add-to-list 'lsp-language-id-configuration '(cmake-mode . "cmake"))
+  (add-to-list 'lsp-language-id-configuration '(cmake-ts-mode . "cmake"))
+
+  (lsp-register-client
+   (make-lsp-client
+    :new-connection (lsp-stdio-connection '("neocmakelsp" "stdio"))
+    :activation-fn (lsp-activate-on "cmake")
+    :priority 1
+    :server-id 'neocmakelsp)))
 #+end_src
 
 ** DAP Mode
