@@ -867,10 +867,25 @@ LSP client for Emacs.
           '(orderless)))
   :hook (
          (c-mode . lsp)
+         (c-ts-mode . lsp)
+         
          (c++-mode . lsp)
+         (c++-ts-mode . lsp)
+         
          (rust-mode . lsp)
          (rust-ts-mode . lsp)
+
          (cmake-mode . lsp)
+         (cmake-ts-mode . lsp)
+
+         (js-mode . lsp)
+         (js-ts-mode . lsp)
+         
+         (typescript-mode . lsp)
+         (typescript-ts-mode . lsp)
+
+         (jtsx-jsx-mode . lsp)
+         (jtsx-tsx-mode . lsp)
 
          (lsp-completion-mode . my/lsp-mode-setup-completion)
          (lsp-mode . lsp-enable-which-key-integration))
