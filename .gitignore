@@ -18,6 +18,7 @@ debug-adapters/
 tree-sitter/
 emms/
 eaf/
+request/
 
 .dap-breakpoints
 .lsp-session-*

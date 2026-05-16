@@ -932,6 +932,20 @@ Language server configurations for the required major modes comes here.
                                           (require 'lsp-pyright)
                                           (lsp))))
 
+;; Java
+(use-package lsp-java
+  :config
+  (add-hook 'java-mode-hook #'lsp)
+  (add-hook 'java-ts-mode-hook #'lsp)
+  ;; Current vscode defaults for jdtls
+  ;; current VSCode defaults
+  (setq lsp-java-vmargs '("-XX:+UseParallelGC"
+                          "-XX:GCTimeRatio=4"
+                          "-XX:AdaptiveSizePolicyWeight=90"
+                          "-Dsun.zip.disableMemoryMapping=true"
+                          "-Xmx2G"
+                          "-Xms100m")))
+
 ;; Rust
 ;; rustup component add rust-analyzer
 (setq lsp-rust-analyzer-cargo-watch-enable nil)
@@ -950,10 +964,40 @@ Language server configurations for the required major modes comes here.
     :server-id 'neocmakelsp)))
 #+end_src
 
+** DAPE Mode
+Debug Adapter Protocol (DAP) Emacs. This is smiliar to DAP mode but way better defaults and less configuration required.
+Note that Java DAPE requires Eglot instead of LSP mode. There's always VSCode for debugging too if you are feeling lazy!
+
+#+begin_src emacs-lisp
+(use-package dape
+  :custom
+  ;; Turn on global bindings for setting breakpoints with mouse
+  (dape-breakpoint-global-mode +1)
+  ;; Info buffers to the right
+  (dape-buffer-window-arrangement 'right)
+  :config
+  ;; Pulse source line (performance hit)
+  (add-hook 'dape-display-source-hook #'pulse-momentary-highlight-one-line)
+  ;; Save buffers on startup, useful for interpreted languages
+  (add-hook 'dape-start-hook (lambda () (save-some-buffers t t)))
+  ;; Kill compile buffer on build success
+  (add-hook 'dape-compile-hook #'kill-buffer))
+
+;; Dape uses Eglot for Java
+(use-package eglot
+  :ensure nil
+  :config
+  (add-to-list 'eglot-server-programs
+               '((java-mode java-ts-mode) .
+                 ("~/.emacs.d/.cache/lsp/eclipse.jdt.ls/bin/jdtls"
+                  :initializationOptions
+                  (:bundles ["~/.local/bin/com.microsoft.java.debug.plugin-0.53.2.jar"])))))
+#+end_src
+
 ** DAP Mode
 Debug Adapter Protocol (DAP) configuration for various languages.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package dap-mode
   :config
   ;; Enabling only some features
@@ -1074,7 +1118,11 @@ C/C++ modes configuration.
 ;; Make C and C++ modes respect the `tab-always-indent` variable.
 (with-eval-after-load 'cc-mode
   (define-key c-mode-map   (kbd "TAB") #'indent-for-tab-command)
-  (define-key c++-mode-map (kbd "TAB") #'indent-for-tab-command))
+  (define-key c-mode-map   (kbd "<tab>") #'indent-for-tab-command)
+  (define-key c++-mode-map (kbd "TAB") #'indent-for-tab-command)
+  (define-key c++-mode-map (kbd "<tab>") #'indent-for-tab-command)
+  (define-key java-mode-map (kbd "TAB") #'indent-for-tab-command)
+  (define-key java-mode-map (kbd "<tab>") #'indent-for-tab-command))
 #+end_src
 
 ** JS/TS and JSX/TSX
