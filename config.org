@@ -793,17 +793,24 @@ Snippets support in Emacs.
 capf extensions for corfu.
 
 #+begin_src emacs-lisp
+(use-package company)
+
+(defalias 'cape-etags
+  (cape-company-to-capf #'company-etags))
+
 (use-package cape
   :init
   (add-hook 'completion-at-point-functions #'cape-file)
   (add-hook 'completion-at-point-functions #'cape-dabbrev)
   (add-hook 'completion-at-point-functions #'cape-keyword)
   (add-hook 'completion-at-point-functions #'yasnippet-capf)
+  (add-hook 'completion-at-point-functions #'cape-etags)
   :config
-  (advice-add #'yasnippet-capf            :around #'cape-wrap-noninterruptible)
-  (advice-add #'cape-dabbrev              :around #'cape-wrap-noninterruptible)
-  (advice-add #'cape-keyword              :around #'cape-wrap-noninterruptible)
-  (advice-add #'cape-file                 :around #'cape-wrap-noninterruptible)
+  (advice-add #'yasnippet-capf                    :around #'cape-wrap-noninterruptible)
+  (advice-add #'cape-dabbrev                      :around #'cape-wrap-noninterruptible)
+  (advice-add #'cape-keyword                      :around #'cape-wrap-noninterruptible)
+  (advice-add #'cape-etags                        :around #'cape-wrap-noninterruptible)
+  (advice-add #'cape-file                         :around #'cape-wrap-noninterruptible)
 
   ;; When LSP mode manages a buffer, set up a composed CAPF that combines
   ;; LSP completions with snippets, dabbrev, and keywords.
