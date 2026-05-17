@@ -793,11 +793,6 @@ Snippets support in Emacs.
 capf extensions for corfu.
 
 #+begin_src emacs-lisp
-(use-package company)
-
-(defalias 'cape-etags
-  (cape-company-to-capf #'company-etags))
-
 (use-package cape
   :init
   (add-hook 'completion-at-point-functions #'cape-file)
@@ -813,6 +808,7 @@ capf extensions for corfu.
   (advice-add #'cape-file                         :around #'cape-wrap-noninterruptible)
 
   ;; When LSP mode manages a buffer, set up a composed CAPF that combines
+
   ;; LSP completions with snippets, dabbrev, and keywords.
   (add-hook 'lsp-completion-mode-hook (lambda ()
                                         (setq-local completion-at-point-functions
@@ -823,6 +819,11 @@ capf extensions for corfu.
                                                        #'lsp-completion-at-point
                                                        #'yasnippet-capf
                                                        #'cape-dabbrev)))))))
+
+(use-package company)
+
+(defalias 'cape-etags
+  (cape-company-to-capf #'company-etags))
 #+end_src
 
 ** Emacs LSP Booster
