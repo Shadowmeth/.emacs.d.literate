@@ -1032,6 +1032,13 @@ Configuration for Java mode.
 
 ;; Make jdtls decompiled sources use java mode
 (add-to-list 'auto-mode-alist '("\\.java(.*\\.class)\\'" . java-mode))
+
+(add-hook 'java-mode-hook
+          (lambda ()
+            (setq c-basic-offset 4
+                  tab-width 4
+                  indent-tabs-mode nil)
+            (c-set-style "java")))
 #+end_src
 
 ** JS/TS and JSX/TSX
